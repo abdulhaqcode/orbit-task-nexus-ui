@@ -1,6 +1,8 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 import { Task, Category, Filter, Priority, TaskStatus, RecurrenceType } from '@/types/todo';
+import { taskAPI, categoryAPI } from '@/lib/api';
 
 interface TodoContextType {
   tasks: Task[];
@@ -69,15 +71,9 @@ const defaultTasks: Task[] = [
 ];
 
 export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [tasks, setTasks] = useState<Task[]>(() => {
-    const saved = localStorage.getItem('todos');
-    return saved ? JSON.parse(saved) : defaultTasks;
-  });
-
-  const [categories, setCategories] = useState<Category[]>(() => {
-    const saved = localStorage.getItem('categories');
-    return saved ? JSON.parse(saved) : defaultCategories;
-  });
+  const { user } = useAuth()
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
 
   const [filter, setFilterState] = useState<Filter>({
     search: '',
@@ -94,12 +90,45 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({ children
   });
 
   useEffect(() => {
-    localStorage.setItem('todos', JSON.stringify(tasks));
-  }, [tasks]);
+    const fetchTasks = async () => {
+      if (user) {
+        try {
+          const { tasks: fetchedTasks } = await taskAPI.getTasks();
+          const transformedTasks = fetchedTasks.map((task: any) => ({
+            ...task,
+            createdAt: new Date(task.created_at),
+            updatedAt: new Date(task.updated_at),
+            dueDate: task.due_date ? new Date(task.due_date) : undefined,
+            category: task.category_name || '',
+          }));
+          setTasks(transformedTasks);
+        } catch (error) {
+          console.error('Failed to fetch tasks:', error);
+        }
+      }
+    };
+    fetchTasks();
+  }, [user]);
 
   useEffect(() => {
-    localStorage.setItem('categories', JSON.stringify(categories));
-  }, [categories]);
+    const fetchCategories = async () => {
+      if (user) {
+        try {
+          const { categories: fetchedCategories } = await categoryAPI.getCategories();
+          const transformedCategories = fetchedCategories.map((cat: any) => ({
+            ...cat,
+            createdAt: new Date(cat.created_at),
+            updatedAt: new Date(cat.updated_at),
+          }));
+          setCategories(transformedCategories);
+        } catch (error) {
+          console.error('Failed to fetch categories:', error);
+          setCategories(defaultCategories);
+        }
+      }
+    };
+    fetchCategories();
+  }, [user]);
 
   useEffect(() => {
     localStorage.setItem('darkMode', JSON.stringify(isDarkMode));
@@ -110,26 +139,77 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [isDarkMode]);
 
-  const addTask = (taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => {
-    const newTask: Task = {
-      ...taskData,
-      id: Date.now().toString(),
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-    setTasks(prev => [...prev, newTask]);
+  const addTask = async (taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => {
+    try {
+      const { task: newTask } = await taskAPI.createTask({
+        title: taskData.title,
+        description: taskData.description,
+        priority: taskData.priority,
+        category_name: taskData.category,
+        tags: taskData.tags,
+        due_date: taskData.dueDate?.toISOString(),
+        due_time: taskData.dueTime,
+        status: taskData.status,
+        recurrence: taskData.recurrence,
+        custom_recurrence: taskData.customRecurrence,
+        reminder_time: taskData.reminderTime,
+        completed: taskData.completed,
+      });
+      
+      const transformedTask = {
+        ...newTask,
+        createdAt: new Date(newTask.created_at),
+        updatedAt: new Date(newTask.updated_at),
+        dueDate: newTask.due_date ? new Date(newTask.due_date) : undefined,
+        category: newTask.category_name || '',
+      };
+      setTasks(prev => [...prev, transformedTask]);
+    } catch (error) {
+      console.error('Failed to add task:', error);
+      throw error;
+    }
   };
 
-  const updateTask = (id: string, updates: Partial<Task>) => {
-    setTasks(prev => prev.map(task => 
-      task.id === id 
-        ? { ...task, ...updates, updatedAt: new Date() }
-        : task
-    ));
+  const updateTask = async (id: string, updates: Partial<Task>) => {
+    try {
+      const { task: updatedTask } = await taskAPI.updateTask(id, {
+        title: updates.title,
+        description: updates.description,
+        priority: updates.priority,
+        category_name: updates.category,
+        tags: updates.tags,
+        due_date: updates.dueDate?.toISOString(),
+        due_time: updates.dueTime,
+        status: updates.status,
+        recurrence: updates.recurrence,
+        custom_recurrence: updates.customRecurrence,
+        reminder_time: updates.reminderTime,
+        completed: updates.completed,
+      });
+      
+      const transformedTask = {
+        ...updatedTask,
+        createdAt: new Date(updatedTask.created_at),
+        updatedAt: new Date(updatedTask.updated_at),
+        dueDate: updatedTask.due_date ? new Date(updatedTask.due_date) : undefined,
+        category: updatedTask.category_name || '',
+      };
+      
+      setTasks(prev => prev.map(task => task.id === id ? transformedTask : task));
+    } catch (error) {
+      console.error('Failed to update task:', error);
+      throw error;
+    }
   };
 
-  const deleteTask = (id: string) => {
-    setTasks(prev => prev.filter(task => task.id !== id));
+  const deleteTask = async (id: string) => {
+    try {
+      await taskAPI.deleteTask(id);
+      setTasks(prev => prev.filter(task => task.id !== id));
+    } catch (error) {
+      console.error('Failed to delete task:', error);
+      throw error;
+    }
   };
 
   const toggleTask = (id: string) => {
@@ -145,12 +225,24 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({ children
     ));
   };
 
-  const addCategory = (categoryData: Omit<Category, 'id'>) => {
-    const newCategory: Category = {
-      ...categoryData,
-      id: Date.now().toString(),
-    };
-    setCategories(prev => [...prev, newCategory]);
+  const addCategory = async (categoryData: Omit<Category, 'id'>) => {
+    try {
+      const { category: newCategory } = await categoryAPI.createCategory({
+        name: categoryData.name,
+        color: categoryData.color,
+        icon: categoryData.icon,
+      });
+      
+      const transformedCategory = {
+        ...newCategory,
+        createdAt: new Date(newCategory.created_at),
+        updatedAt: new Date(newCategory.updated_at),
+      };
+      setCategories(prev => [...prev, transformedCategory]);
+    } catch (error) {
+      console.error('Failed to add category:', error);
+      throw error;
+    }
   };
 
   const setFilter = (newFilter: Partial<Filter>) => {

@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useTodo } from '@/contexts/TodoContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { Link } from 'react-router-dom'
 
 interface HeaderProps {
   onAddTask: () => void;
@@ -27,6 +29,8 @@ export const Header: React.FC<HeaderProps> = ({ onAddTask }) => {
     calendar: Calendar,
   };
 
+  const { user, signOut } = useAuth()
+
   return (
     <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 p-4">
       <div className="max-w-7xl mx-auto">
@@ -45,9 +49,17 @@ export const Header: React.FC<HeaderProps> = ({ onAddTask }) => {
               <Plus className="h-4 w-4 mr-2" />
               Add Task
             </Button>
+            {user ? (
+              <div className="flex items-center gap-2">
+                <div className="text-sm text-gray-700 dark:text-gray-200">{user.email}</div>
+                <Button variant="outline" size="sm" onClick={() => signOut()}>Sign Out</Button>
+              </div>
+            ) : (
+              <Link to="/login"><Button variant="outline" size="sm">Sign In</Button></Link>
+            )}
           </div>
         </div>
-        
+
         <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
           <div className="flex flex-1 items-center space-x-4">
             <div className="relative flex-1 max-w-md">
