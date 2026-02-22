@@ -156,12 +156,28 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({ children
         completed: taskData.completed,
       });
       
-      const transformedTask = {
-        ...newTask,
+      const transformedTask: Task = {
+        id: newTask.id,
+        title: newTask.title,
+        description: newTask.description,
+        completed: newTask.completed,
+        priority: newTask.priority,
+        category: newTask.category_name || '',
+        tags: newTask.tags || [],
+        dueDate: newTask.due_date ? new Date(newTask.due_date) : undefined,
+        dueTime: newTask.due_time,
+        status: newTask.status,
+        subtasks: (newTask.subtasks || []).map((s: any) => ({
+          id: s.id,
+          title: s.title,
+          completed: s.completed,
+          createdAt: new Date(s.created_at),
+        })),
+        recurrence: newTask.recurrence,
+        customRecurrence: newTask.custom_recurrence,
         createdAt: new Date(newTask.created_at),
         updatedAt: new Date(newTask.updated_at),
-        dueDate: newTask.due_date ? new Date(newTask.due_date) : undefined,
-        category: newTask.category_name || '',
+        reminderTime: newTask.reminder_time,
       };
       setTasks(prev => [...prev, transformedTask]);
     } catch (error) {
@@ -187,12 +203,28 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({ children
         completed: updates.completed,
       });
       
-      const transformedTask = {
-        ...updatedTask,
+      const transformedTask: Task = {
+        id: updatedTask.id,
+        title: updatedTask.title,
+        description: updatedTask.description,
+        completed: updatedTask.completed,
+        priority: updatedTask.priority,
+        category: updatedTask.category_name || '',
+        tags: updatedTask.tags || [],
+        dueDate: updatedTask.due_date ? new Date(updatedTask.due_date) : undefined,
+        dueTime: updatedTask.due_time,
+        status: updatedTask.status,
+        subtasks: (updatedTask.subtasks || []).map((s: any) => ({
+          id: s.id,
+          title: s.title,
+          completed: s.completed,
+          createdAt: new Date(s.created_at),
+        })),
+        recurrence: updatedTask.recurrence,
+        customRecurrence: updatedTask.custom_recurrence,
         createdAt: new Date(updatedTask.created_at),
         updatedAt: new Date(updatedTask.updated_at),
-        dueDate: updatedTask.due_date ? new Date(updatedTask.due_date) : undefined,
-        category: updatedTask.category_name || '',
+        reminderTime: updatedTask.reminder_time,
       };
       
       setTasks(prev => prev.map(task => task.id === id ? transformedTask : task));
