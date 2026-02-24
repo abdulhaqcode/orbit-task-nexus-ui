@@ -17,16 +17,16 @@ interface TaskItemProps {
 }
 
 const priorityColors: Record<Priority, string> = {
-  low: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-  medium: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
-  high: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
-  urgent: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
+  low: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300',
+  medium: 'bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300',
+  high: 'bg-orange-100 text-orange-700 dark:bg-orange-900/50 dark:text-orange-300',
+  urgent: 'bg-rose-100 text-rose-700 dark:bg-rose-900/50 dark:text-rose-300',
 };
 
 const statusColors = {
-  todo: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200',
-  'in-progress': 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-  done: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+  todo: 'bg-secondary text-secondary-foreground',
+  'in-progress': 'bg-sky-100 text-sky-700 dark:bg-sky-900/50 dark:text-sky-300',
+  done: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300',
 };
 
 export const TaskItem: React.FC<TaskItemProps> = ({ task, onEdit, isDragging = false }) => {
@@ -54,10 +54,10 @@ export const TaskItem: React.FC<TaskItemProps> = ({ task, onEdit, isDragging = f
   return (
     <Card 
       className={cn(
-        "group transition-all duration-200 hover:shadow-md animate-fade-in",
-        isDragging && "opacity-50 rotate-2",
-        task.completed && "opacity-75",
-        isOverdue && "border-l-4 border-l-red-500"
+        "group transition-all duration-300 hover:shadow-glow hover:-translate-y-0.5 animate-fade-in border-border/50",
+        isDragging && "opacity-50 rotate-2 shadow-glow-lg",
+        task.completed && "opacity-60",
+        isOverdue && "border-l-4 border-l-destructive"
       )}
     >
       <CardContent className="p-4">
@@ -73,8 +73,8 @@ export const TaskItem: React.FC<TaskItemProps> = ({ task, onEdit, isDragging = f
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between mb-2">
               <h3 className={cn(
-                "font-medium text-gray-900 dark:text-white truncate",
-                task.completed && "line-through text-gray-500"
+                "font-medium text-foreground truncate",
+                task.completed && "line-through text-muted-foreground"
               )}>
                 {task.title}
               </h3>
@@ -85,14 +85,14 @@ export const TaskItem: React.FC<TaskItemProps> = ({ task, onEdit, isDragging = f
                     <MoreHorizontal className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="bg-white dark:bg-gray-800">
+                <DropdownMenuContent align="end" className="bg-popover">
                   <DropdownMenuItem onClick={() => onEdit(task)}>
                     <Edit className="h-4 w-4 mr-2" />
                     Edit
                   </DropdownMenuItem>
                   <DropdownMenuItem 
                     onClick={() => deleteTask(task.id)}
-                    className="text-red-600 dark:text-red-400"
+                    className="text-destructive"
                   >
                     <Trash2 className="h-4 w-4 mr-2" />
                     Delete
@@ -102,7 +102,7 @@ export const TaskItem: React.FC<TaskItemProps> = ({ task, onEdit, isDragging = f
             </div>
 
             {task.description && (
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">
+              <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
                 {task.description}
               </p>
             )}
@@ -130,12 +130,12 @@ export const TaskItem: React.FC<TaskItemProps> = ({ task, onEdit, isDragging = f
               ))}
             </div>
 
-            <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
+            <div className="flex items-center justify-between text-sm text-muted-foreground">
               <div className="flex items-center space-x-4">
                 {task.dueDate && (
                   <div className={cn(
                     "flex items-center space-x-1",
-                    isOverdue && "text-red-600 dark:text-red-400 font-medium"
+                    isOverdue && "text-destructive font-medium"
                   )}>
                     <Calendar className="h-4 w-4" />
                     <span>{formatDueDate(new Date(task.dueDate), task.dueTime)}</span>
@@ -144,7 +144,7 @@ export const TaskItem: React.FC<TaskItemProps> = ({ task, onEdit, isDragging = f
 
                 {task.subtasks.length > 0 && (
                   <div 
-                    className="flex items-center space-x-1 cursor-pointer hover:text-gray-700 dark:hover:text-gray-300"
+                    className="flex items-center space-x-1 cursor-pointer hover:text-foreground"
                     onClick={() => setShowSubtasks(!showSubtasks)}
                   >
                     <CheckCircle2 className="h-4 w-4" />
@@ -162,13 +162,13 @@ export const TaskItem: React.FC<TaskItemProps> = ({ task, onEdit, isDragging = f
             </div>
 
             {showSubtasks && task.subtasks.length > 0 && (
-              <div className="mt-3 pl-4 border-l-2 border-gray-200 dark:border-gray-600">
+              <div className="mt-3 pl-4 border-l-2 border-border">
                 {task.subtasks.map(subtask => (
                   <div key={subtask.id} className="flex items-center space-x-2 py-1">
-                    <Circle className="h-3 w-3 text-gray-400" />
+                    <Circle className="h-3 w-3 text-muted-foreground" />
                     <span className={cn(
                       "text-sm",
-                      subtask.completed && "line-through text-gray-500"
+                      subtask.completed && "line-through text-muted-foreground"
                     )}>
                       {subtask.title}
                     </span>
