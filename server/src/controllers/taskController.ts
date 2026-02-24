@@ -32,7 +32,7 @@ export const getTasks = async (req: AuthRequest, res: Response) => {
     res.json({ tasks: result.rows });
   } catch (error) {
     console.error('Get tasks error:', error);
-    res.status(500).json({ error: 'Internal 10 server error' });
+    res.status(500).json({ error: 'Internal server error' });
   }
 };
 
@@ -71,7 +71,7 @@ export const getTaskById = async (req: AuthRequest, res: Response) => {
     res.json({ task: result.rows[0] });
   } catch (error) {
     console.error('Get task error:', error);
-    res.status(500).json({ error: 'Internal 11 server error' });
+    res.status(500).json({ error: 'Internal server error' });
   }
 };
 
@@ -137,7 +137,7 @@ export const createTask = async (req: AuthRequest, res: Response) => {
     res.status(201).json({ message: 'Task created successfully', task });
   } catch (error) {
     console.error('Create task error:', error);
-    res.status(500).json({ error: 'Internal 12 server error' });
+    res.status(500).json({ error: 'Internal server error' });
   }
 };
 
@@ -213,7 +213,7 @@ export const updateTask = async (req: AuthRequest, res: Response) => {
     res.json({ message: 'Task updated successfully', task });
   } catch (error) {
     console.error('Update task error:', error);
-    res.status(500).json({ error: 'Internal 13 server error' });
+    res.status(500).json({ error: 'Internal server error' });
   }
 };
 
@@ -237,7 +237,7 @@ export const deleteTask = async (req: AuthRequest, res: Response) => {
     res.json({ message: 'Task deleted successfully' });
   } catch (error) {
     console.error('Delete task error:', error);
-    res.status(500).json({ error: 'Internal 14 server error' });
+    res.status(500).json({ error: 'Internal server error' });
   }
 };
 
@@ -267,7 +267,7 @@ export const addSubtask = async (req: AuthRequest, res: Response) => {
     res.status(201).json({ message: 'Subtask added successfully', subtask: result.rows[0] });
   } catch (error) {
     console.error('Add subtask error:', error);
-    res.status(500).json({ error: 'Internal 15 server error' });
+    res.status(500).json({ error: 'Internal server error' });
   }
 };
 
@@ -305,7 +305,7 @@ export const updateSubtask = async (req: AuthRequest, res: Response) => {
     res.json({ message: 'Subtask updated successfully', subtask: result.rows[0] });
   } catch (error) {
     console.error('Update subtask error:', error);
-    res.status(500).json({ error: 'Internal 16 server error' });
+    res.status(500).json({ error: 'Internal server error' });
   }
 };
 
@@ -338,6 +338,6 @@ export const deleteSubtask = async (req: AuthRequest, res: Response) => {
     res.json({ message: 'Subtask deleted successfully' });
   } catch (error) {
     console.error('Delete subtask error:', error);
-    res.status(500).json({ error: 'Internal 17 server error' });
+    res.status(500).json({ error: 'Internal server error' });
   }
 };

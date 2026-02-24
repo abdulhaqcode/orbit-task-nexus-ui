@@ -56,19 +56,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }
 
-  const signUp = async (username: string, email: string, password: string, fullName: string) => {
+  const signUp = async (username: string, email: string, password: string, fullName?: string) => {
     setLoading(true)
     try {
       const response = await authAPI.register({ 
         username, 
         email, 
         password, 
-        fullName: fullName 
+        full_name: fullName 
       })
       setUser(response.user)
       setLoading(false)
       return { data: response, error: null }
-    } catch (err: unknown) {
+    } catch (err: any) {
       setLoading(false)
       return { 
         data: null, 

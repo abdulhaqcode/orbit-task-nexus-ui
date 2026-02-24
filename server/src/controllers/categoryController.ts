@@ -16,7 +16,7 @@ export const getCategories = async (req: AuthRequest, res: Response) => {
     res.json({ categories: result.rows });
   } catch (error) {
     console.error('Get categories error:', error);
-    res.status(500).json({ error: 'Internal 6 server error' });
+    res.status(500).json({ error: 'Internal server error' });
   }
 };
 
@@ -45,7 +45,7 @@ export const createCategory = async (req: AuthRequest, res: Response) => {
     res.status(201).json({ message: 'Category created successfully', category: result.rows[0] });
   } catch (error) {
     console.error('Create category error:', error);
-    res.status(500).json({ error: 'Internal 7 server error' });
+    res.status(500).json({ error: 'Internal server error' });
   }
 };
 
@@ -75,7 +75,7 @@ export const updateCategory = async (req: AuthRequest, res: Response) => {
     res.json({ message: 'Category updated successfully', category: result.rows[0] });
   } catch (error) {
     console.error('Update category error:', error);
-    res.status(500).json({ error: 'Internal 8 server error' });
+    res.status(500).json({ error: 'Internal server error' });
   }
 };
 
@@ -99,6 +99,6 @@ export const deleteCategory = async (req: AuthRequest, res: Response) => {
     res.json({ message: 'Category deleted successfully' });
   } catch (error) {
     console.error('Delete category error:', error);
-    res.status(500).json({ error: 'Internal 9 server error' });
+    res.status(500).json({ error: 'Internal server error' });
   }
 };

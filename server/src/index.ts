@@ -62,7 +62,7 @@ app.use((req, res) => {
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error('Error:', err);
   res.status(err.status || 500).json({
-    error: err.message || 'Internal 1 server error',
+    error: err.message || 'Internal server error',
   });
 });
 
