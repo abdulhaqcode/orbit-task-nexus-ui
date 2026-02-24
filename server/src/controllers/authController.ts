@@ -49,7 +49,7 @@ export const register = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error('Registration error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: 'Internal 2 server error' });
   }
 };
 
@@ -101,7 +101,7 @@ export const login = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error('Login error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: 'Internal 3 server error' });
   }
 };
 
@@ -126,7 +126,7 @@ export const getProfile = async (req: AuthRequest, res: Response) => {
     });
   } catch (error) {
     console.error('Get profile error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: 'Internal 4 server error' });
   }
 };
 
@@ -151,7 +151,7 @@ export const updateProfile = async (req: AuthRequest, res: Response) => {
     });
   } catch (error) {
     console.error('Update profile error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: 'Internal 5 server error' });
   }
 };
 
