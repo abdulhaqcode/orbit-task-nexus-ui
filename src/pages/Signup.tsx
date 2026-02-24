@@ -34,9 +34,9 @@ const Signup = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
-      <div className="w-full max-w-md p-6 bg-white dark:bg-gray-800 rounded-lg shadow">
-        <h1 className="text-2xl font-bold mb-4">Create an account</h1>
+    <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="w-full max-w-md p-8 bg-card rounded-xl shadow-glow border border-border/50 animate-scale-in">
+        <h1 className="text-2xl font-bold mb-6 gradient-text">Create an account</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium mb-1">Username</label>
@@ -77,9 +77,9 @@ const Signup = () => {
               required
             />
           </div>
-          {error && <div className="text-sm text-red-600">{error}</div>}
+          {error && <div className="text-sm text-destructive">{error}</div>}
           <div className="flex items-center justify-between">
-            <Button type="submit" className="w-full" disabled={loading}>
+            <Button type="submit" className="w-full gradient-primary border-0 text-white shadow-glow hover:shadow-glow-lg" disabled={loading}>
               {loading ? 'Creating account...' : 'Create account'}
             </Button>
           </div>
@@ -88,10 +88,10 @@ const Signup = () => {
         <div className="mt-6">
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
+              <div className="w-full border-t border-border"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white dark:bg-gray-800 text-gray-500">Or sign up with</span>
+              <span className="px-2 bg-card text-muted-foreground">Or sign up with</span>
             </div>
           </div>
           
@@ -124,7 +124,7 @@ const Signup = () => {
         </div>
         
         <div className="mt-4 text-sm text-center">
-          Already have an account? <Link to="/login" className="text-blue-600 underline">Sign in</Link>
+          Already have an account? <Link to="/login" className="text-primary underline font-medium">Sign in</Link>
         </div>
       </div>
     </div>
