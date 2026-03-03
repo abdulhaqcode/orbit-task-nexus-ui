@@ -5,6 +5,8 @@ import {
   login,
   getProfile,
   updateProfile,
+  changePassword,
+  deleteAccount,
   oauthCallback,
 } from '../controllers/authController';
 import { authenticate } from '../middleware/auth';
@@ -16,6 +18,8 @@ router.post('/register', registerValidation, validateRequest, register);
 router.post('/login', loginValidation, validateRequest, login);
 router.get('/profile', authenticate, getProfile);
 router.put('/profile', authenticate, updateProfile);
+router.put('/password', authenticate, changePassword);
+router.delete('/me', authenticate, deleteAccount);
 
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 router.get('/google/callback', passport.authenticate('google', { session: false }), oauthCallback);

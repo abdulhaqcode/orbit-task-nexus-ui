@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Search, List, Calendar, Grid3X3, Sun, Moon, Plus } from 'lucide-react';
+import { Search, List, Calendar, Grid3X3, Sun, Moon, Plus, UserCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -50,10 +50,11 @@ export const Header: React.FC<HeaderProps> = ({ onAddTask }) => {
               Add Task
             </Button>
             {user ? (
-              <div className="flex items-center gap-2">
-                <div className="text-sm text-gray-700 dark:text-gray-200">{user.email}</div>
-                <Button variant="outline" size="sm" onClick={() => signOut()}>Sign Out</Button>
-              </div>
+              <Link to="/account">
+                <Button variant="outline" size="icon" title="Account">
+                  <UserCircle className="h-5 w-5" />
+                </Button>
+              </Link>
             ) : (
               <Link to="/login"><Button variant="outline" size="sm">Sign In</Button></Link>
             )}

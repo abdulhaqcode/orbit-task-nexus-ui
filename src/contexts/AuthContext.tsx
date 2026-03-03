@@ -8,6 +8,7 @@ type AuthContextType = {
   signIn: (identifier: string, password: string) => Promise<any>
   signUp: (username: string, email: string, password: string, fullName?: string) => Promise<any>
   signOut: () => void
+  setUser: (user: User) => void
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -84,7 +85,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }
 
   return (
-    <AuthContext.Provider value={{ user, loading, signIn, signUp, signOut }}>
+    <AuthContext.Provider value={{ user, loading, signIn, signUp, signOut, setUser }}>
       {children}
     </AuthContext.Provider>
   )

@@ -3,6 +3,7 @@ import { query } from '../database/db';
 import { hashPassword, comparePassword } from '../utils/password';
 import { generateToken } from '../utils/jwt';
 import { AuthRequest } from '../types';
+import { AuthRequest } from '../types';
 
 export const register = async (req: Request, res: Response) => {
   try {
@@ -136,13 +137,13 @@ export const updateProfile = async (req: AuthRequest, res: Response) => {
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    const { full_name, avatar_url } = req.body;
+    const { full_name, avatar_url, username } = req.body;
 
     const result = await query(
-      `UPDATE users SET full_name = COALESCE($1, full_name), avatar_url = COALESCE($2, avatar_url)
-       WHERE id = $3
+      `UPDATE users SET full_name = COALESCE($1, full_name), avatar_url = COALESCE($2, avatar_url), username = COALESCE($3, username)
+       WHERE id = $4
        RETURNING id, username, email, full_name, avatar_url, provider, email_verified`,
-      [full_name, avatar_url, req.user.id]
+      [full_name, avatar_url, username, req.user.id]
     );
 
     res.json({
@@ -151,6 +152,77 @@ export const updateProfile = async (req: AuthRequest, res: Response) => {
     });
   } catch (error) {
     console.error('Update profile error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+export const changePassword = async (req: AuthRequest, res: Response) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const { current_password, new_password } = req.body;
+
+    if (!current_password || !new_password) {
+      return res.status(400).json({ error: 'Current and new password are required' });
+    }
+
+    if (new_password.length < 6) {
+      return res.status(400).json({ error: 'New password must be at least 6 characters' });
+    }
+
+    const userResult = await query('SELECT password_hash FROM users WHERE id = $1', [req.user.id]);
+    if (!userResult.rows[0]?.password_hash) {
+      return res.status(400).json({ error: 'Cannot change password for OAuth accounts' });
+    }
+
+    const isValid = await comparePassword(current_password, userResult.rows[0].password_hash);
+    if (!isValid) {
+      return res.status(401).json({ error: 'Current password is incorrect' });
+    }
+
+    const newHash = await hashPassword(new_password);
+    await query('UPDATE users SET password_hash = $1 WHERE id = $2', [newHash, req.user.id]);
+
+    // Invalidate all refresh tokens
+    await query('DELETE FROM refresh_tokens WHERE user_id = $1', [req.user.id]);
+
+    res.json({ message: 'Password changed successfully' });
+  } catch (error) {
+    console.error('Change password error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+export const deleteAccount = async (req: AuthRequest, res: Response) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const { password } = req.body;
+
+    if (!password) {
+      return res.status(400).json({ error: 'Password is required to delete account' });
+    }
+
+    const userResult = await query('SELECT password_hash FROM users WHERE id = $1', [req.user.id]);
+    if (!userResult.rows[0]?.password_hash) {
+      return res.status(400).json({ error: 'Cannot verify password for OAuth accounts' });
+    }
+
+    const isValid = await comparePassword(password, userResult.rows[0].password_hash);
+    if (!isValid) {
+      return res.status(401).json({ error: 'Incorrect password' });
+    }
+
+    // Delete user — CASCADE will remove tasks, categories, subtasks, refresh_tokens
+    await query('DELETE FROM users WHERE id = $1', [req.user.id]);
+
+    res.json({ message: 'Account deleted successfully' });
+  } catch (error) {
+    console.error('Delete account error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 };

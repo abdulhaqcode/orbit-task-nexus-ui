@@ -119,8 +119,18 @@ export const authAPI = {
     return response.data;
   },
 
-  updateProfile: async (data: { full_name?: string; avatar_url?: string }) => {
+  updateProfile: async (data: { full_name?: string; avatar_url?: string; username?: string }) => {
     const response = await api.put('/auth/profile', data);
+    return response.data;
+  },
+
+  changePassword: async (data: { current_password: string; new_password: string }) => {
+    const response = await api.put('/auth/password', data);
+    return response.data;
+  },
+
+  deleteAccount: async (data: { password: string }) => {
+    const response = await api.delete('/auth/me', { data });
     return response.data;
   },
 
